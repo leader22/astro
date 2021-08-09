@@ -59,15 +59,16 @@ nav ul {
 }
 
 h1 {
-  font-size: 2.25rem;
+  font-size: 3.25rem;
+  font-weight: 800;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: 2.25rem;
 }
 
 h3 {
-  font-size: 1.125rem;
+  font-size: 1.5rem;
 }
 
 h4 {
@@ -78,19 +79,9 @@ h5 {
   font-size: 0.8rem;
 }
 
-@media (min-width: 50em) {
-  h1 {
-    font-size: 3.25rem;
-    font-weight: 800;
-  }
-
-  h2 {
-    font-size: 2rem;
-  }
-
-  h3 {
-    font-size: 1.25rem;
-  }
+p {
+  letter-spacing: -.005625rem;
+  line-height: 1.625em;
 }
 
 p,
