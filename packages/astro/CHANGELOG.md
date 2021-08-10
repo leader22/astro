@@ -1,5 +1,13 @@
 # astro
 
+## 0.18.10
+
+### Patch Changes
+
+- 618ea3a8: Properly escapes script tags with nested client:load directives when passing Astro components into framework components via props. Browsers interpret script end tags in strings as script end tags, resulting in syntax errors.
+- Updated dependencies [1339d5e3]
+  - @astrojs/renderer-vue@0.1.7
+
 ## 0.18.9
 
 ### Patch Changes
