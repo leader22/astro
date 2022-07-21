@@ -1,5 +1,37 @@
 # @astrojs/markdown-remark
 
+## 0.12.0
+
+### Minor Changes
+
+- [#3924](https://github.com/withastro/astro/pull/3924) [`07fb544da`](https://github.com/withastro/astro/commit/07fb544dab142a3d4bb9d0d878aab34eaea447b2) Thanks [@FredKSchott](https://github.com/FredKSchott)! - Remove unused ssr-utils file
+
+### Patch Changes
+
+- Updated dependencies [[`31f9c0bf0`](https://github.com/withastro/astro/commit/31f9c0bf029ffa4b470e620f2c32e1370643e81e)]:
+  - @astrojs/prism@0.6.1
+
+## 0.11.7
+
+### Patch Changes
+
+- [#3919](https://github.com/withastro/astro/pull/3919) [`01a55467d`](https://github.com/withastro/astro/commit/01a55467d561974f843a9e0cd6963af7c840abb9) Thanks [@FredKSchott](https://github.com/FredKSchott)! - Add back missing ssr-utils.js file
+
+## 0.11.6
+
+### Patch Changes
+
+- [#3911](https://github.com/withastro/astro/pull/3911) [`ca45c0c27`](https://github.com/withastro/astro/commit/ca45c0c270f5ca3f7d2fb113a235d415cecdb333) Thanks [@JuanM04](https://github.com/JuanM04)! - Don't throw when Shiki doesn't recognize a language
+
+- Updated dependencies [[`b48767985`](https://github.com/withastro/astro/commit/b48767985359bd359df8071324952ea5f2bc0d86)]:
+  - @astrojs/prism@0.6.0
+
+## 0.11.5
+
+### Patch Changes
+
+- [#3669](https://github.com/withastro/astro/pull/3669) [`93e1020b1`](https://github.com/withastro/astro/commit/93e1020b1e8549b08cf5646e1ebc3ae34e14ebc8) Thanks [@natemoo-re](https://github.com/natemoo-re)! - Tooling: reintroduce smoke test across example projects
+
 ## 0.11.4
 
 ### Patch Changes

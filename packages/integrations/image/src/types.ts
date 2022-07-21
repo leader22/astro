@@ -1,6 +1,18 @@
 /// <reference types="astro/astro-jsx" />
-export type { Image, Picture } from '../components/index.js';
 export * from './index.js';
+
+interface ImageIntegration {
+	loader?: ImageService;
+	ssrLoader: SSRImageService;
+	command: 'dev' | 'build';
+	addStaticImage: (transform: TransformOptions) => void;
+	filenameFormat: (transform: TransformOptions, searchParams: URLSearchParams) => string;
+}
+
+declare global {
+	// eslint-disable-next-line no-var
+	var astroImage: ImageIntegration;
+}
 
 export type InputFormat =
 	| 'heic'

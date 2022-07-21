@@ -11,6 +11,7 @@ import type { RouteInfo, SSRManifest as Manifest } from './types';
 import mime from 'mime';
 import { call as callEndpoint } from '../endpoint/index.js';
 import { consoleLogDestination } from '../logger/console.js';
+import { error } from '../logger/core.js';
 import { joinPaths, prependForwardSlash } from '../path.js';
 import { render } from '../render/core.js';
 import { RouteCache } from '../render/route-cache.js';
@@ -47,6 +48,10 @@ export class App {
 	}
 	match(request: Request): RouteData | undefined {
 		const url = new URL(request.url);
+		// ignore requests matching public assets
+		if (this.#manifest.assets.has(url.pathname)) {
+			return undefined;
+		}
 		return matchRoute(url.pathname, this.#manifestData);
 	}
 	async render(request: Request, routeData?: RouteData): Promise<Response> {
@@ -96,33 +101,43 @@ export class App {
 			}
 		}
 
-		const response = await render({
-			links,
-			logging: this.#logging,
-			markdown: manifest.markdown,
-			mod,
-			origin: url.origin,
-			pathname: url.pathname,
-			scripts,
-			renderers,
-			async resolve(specifier: string) {
-				if (!(specifier in manifest.entryModules)) {
-					throw new Error(`Unable to resolve [${specifier}]`);
-				}
-				const bundlePath = manifest.entryModules[specifier];
-				return bundlePath.startsWith('data:')
-					? bundlePath
-					: prependForwardSlash(joinPaths(manifest.base, bundlePath));
-			},
-			route: routeData,
-			routeCache: this.#routeCache,
-			site: this.#manifest.site,
-			ssr: true,
-			request,
-			streaming: this.#streaming,
-		});
+		try {
+			const response = await render({
+				adapterName: manifest.adapterName,
+				links,
+				logging: this.#logging,
+				markdown: manifest.markdown,
+				mod,
+				mode: 'production',
+				origin: url.origin,
+				pathname: url.pathname,
+				scripts,
+				renderers,
+				async resolve(specifier: string) {
+					if (!(specifier in manifest.entryModules)) {
+						throw new Error(`Unable to resolve [${specifier}]`);
+					}
+					const bundlePath = manifest.entryModules[specifier];
+					return bundlePath.startsWith('data:')
+						? bundlePath
+						: prependForwardSlash(joinPaths(manifest.base, bundlePath));
+				},
+				route: routeData,
+				routeCache: this.#routeCache,
+				site: this.#manifest.site,
+				ssr: true,
+				request,
+				streaming: this.#streaming,
+			});
 
-		return response;
+			return response;
+		} catch (err) {
+			error(this.#logging, 'ssr', err);
+			return new Response(null, {
+				status: 500,
+				statusText: 'Internal server error',
+			});
+		}
 	}
 
 	async #callEndpoint(

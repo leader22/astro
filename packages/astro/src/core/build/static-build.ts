@@ -67,10 +67,14 @@ export async function staticBuild(opts: StaticBuildOptions) {
 	const ssrResult = (await ssrBuild(opts, internals, pageInput)) as RollupOutput;
 	info(opts.logging, 'build', dim(`Completed in ${getTimeStat(timer.ssr, performance.now())}.`));
 
-	const clientInput = new Set<string>([
+	const rendererClientEntrypoints = opts.astroConfig._ctx.renderers
+		.map((r) => r.clientEntrypoint)
+		.filter((a) => typeof a === 'string') as string[];
+
+	const clientInput = new Set([
 		...internals.discoveredHydratedComponents,
 		...internals.discoveredClientOnlyComponents,
-		...(astroConfig._ctx.renderers.map((r) => r.clientEntrypoint).filter((a) => a) as string[]),
+		...rendererClientEntrypoints,
 		...internals.discoveredScripts,
 	]);
 
@@ -140,8 +144,7 @@ async function ssrBuild(opts: StaticBuildOptions, internals: BuildInternals, inp
 			}),
 			...(viteConfig.plugins || []),
 			// SSR needs to be last
-			isBuildingToSSR(opts.astroConfig) &&
-				vitePluginSSR(opts, internals, opts.astroConfig._ctx.adapter!),
+			isBuildingToSSR(opts.astroConfig) && vitePluginSSR(internals, opts.astroConfig._ctx.adapter!),
 			vitePluginAnalyzer(opts.astroConfig, internals),
 		],
 		publicDir: ssr ? false : viteConfig.publicDir,

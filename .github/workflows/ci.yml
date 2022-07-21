@@ -180,16 +180,11 @@ jobs:
     needs: build
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node_version: [14]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
-
-      - name: Update submodules
-        run: git submodule update --remote
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v2.2.1
@@ -199,6 +194,12 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
           cache: 'pnpm'
+
+      - name: Checkout docs
+        uses: actions/checkout@v3
+        with:
+          repository: withastro/docs
+          path: smoke/docs
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile

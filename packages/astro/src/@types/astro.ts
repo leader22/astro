@@ -69,8 +69,6 @@ export interface CLIFlags {
 	host?: string | boolean;
 	port?: number;
 	config?: string;
-	experimentalSsr?: boolean;
-	experimentalIntegrations?: boolean;
 	drafts?: boolean;
 }
 
@@ -92,6 +90,10 @@ export interface AstroGlobal extends AstroGlobalPartial {
 	 * [Astro reference](https://docs.astro.build/en/reference/api-reference/#astrocanonicalurl)
 	 */
 	canonicalURL: URL;
+	/** The address (usually IP address) of the user. Used with SSR only.
+	 *
+	 */
+	clientAddress: string;
 	/** Parameters passed to a dynamic page generated using [getStaticPaths](https://docs.astro.build/en/reference/api-reference/#getstaticpaths)
 	 *
 	 * Example usage:
@@ -498,9 +500,9 @@ export interface AstroUserConfig {
 		 * @type {boolean}
 		 * @default `false`
 		 * @description
-		 * Control if markdown draft pages should be included in the build.
+		 * Control whether Markdown draft pages should be included in the build.
 		 *
-		 * A markdown page is considered a draft if it includes `draft: true` in its front matter. Draft pages are always included & visible during development (`astro dev`) but by default they will not be included in your final build.
+		 * A Markdown page is considered a draft if it includes `draft: true` in its frontmatter. Draft pages are always included & visible during development (`astro dev`) but by default they will not be included in your final build.
 		 *
 		 * ```js
 		 * {
@@ -515,10 +517,31 @@ export interface AstroUserConfig {
 
 		/**
 		 * @docs
+		 * @name markdown.mode
+		 * @type {'md' | 'mdx'}
+		 * @default `mdx`
+		 * @description
+		 * Control whether Markdown processing is done using MDX or not.
+		 *
+		 * MDX processing enables you to use JSX inside your Markdown files. However, there may be instances where you don't want this behavior, and would rather use a "vanilla" Markdown processor. This field allows you to control that behavior.
+		 *
+		 * ```js
+		 * {
+		 *   markdown: {
+		 *     // Example: Use non-MDX processor for Markdown files
+		 *     mode: 'md',
+		 *   }
+		 * }
+		 * ```
+		 */
+		mode?: 'md' | 'mdx';
+
+		/**
+		 * @docs
 		 * @name markdown.shikiConfig
 		 * @typeraw {Partial<ShikiConfig>}
 		 * @description
-		 * Shiki configuration options. See [the markdown configuration docs](https://docs.astro.build/en/guides/markdown-content/#shiki-configuration) for usage.
+		 * Shiki configuration options. See [the Markdown configuration docs](https://docs.astro.build/en/guides/markdown-content/#shiki-configuration) for usage.
 		 */
 		shikiConfig?: Partial<ShikiConfig>;
 
@@ -659,20 +682,6 @@ export interface AstroUserConfig {
 	 */
 	vite?: ViteUserConfig;
 
-	experimental?: {
-		/**
-		 * Enable support for 3rd-party integrations.
-		 * Default: false
-		 */
-		integrations?: boolean;
-
-		/**
-		 * Enable support for 3rd-party SSR adapters.
-		 * Default: false
-		 */
-		ssr?: boolean;
-	};
-
 	// Legacy options to be removed
 
 	/** @deprecated - Use "integrations" instead. Run Astro to learn more about migrating. */
@@ -695,8 +704,6 @@ export interface AstroUserConfig {
 	buildOptions?: never;
 	/** @deprecated `devOptions` has been renamed to `server` */
 	devOptions?: never;
-	/** @deprecated `experimentalIntegrations` has been renamed to `experimental: { integrations: true }` */
-	experimentalIntegrations?: never;
 }
 
 // NOTE(fks): We choose to keep our hand-generated AstroUserConfig interface so that

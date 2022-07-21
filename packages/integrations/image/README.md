@@ -73,6 +73,8 @@ The included `sharp` transformer supports resizing images and encoding them to d
 
 The intergration can be configured to run with a different image service, either a hosted image service or a full image transformer that runs locally in your build or SSR deployment.
 
+> During development, local images may not have been published yet and would not be available to hosted image services. Local images will always use the built-in `sharp` service when using `astro dev`.
+
 There are currently no other configuration options for the `@astrojs/image` integration. Please [open an issue](https://github.com/withastro/astro/issues/new/choose) if you have a compelling use case to share.
 
 <details>
@@ -102,7 +104,7 @@ export default {
 
 ```html
 ---
-import { Image } from '@astrojs/image';
+import { Image } from '@astrojs/image/components';
 import heroImage from '../assets/hero.png';
 ---
 
@@ -130,7 +132,7 @@ import heroImage from '../assets/hero.png';
 
 ```html
 ---
-import { Image } from '@astrojs/image';
+import { Image } from '@astrojs/image/components';
 
 const imageUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
 ---
@@ -154,7 +156,7 @@ const imageUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelog
 ```html
 ---
 setup: |
-  import { Image } from '@astrojs/image'
+  import { Image } from '@astrojs/image/components'
   import hero from '../../assets/blog/introducing-astro.jpg'
 title: Hello world!
 publishDate: 12 Sep 2021
@@ -179,20 +181,20 @@ description: Just a Hello World Post!
 
 ```html
 ---
-import { Picture } from '@astrojs/image';
+import { Picture } from '@astrojs/image/components';
 import hero from '../assets/hero.png';
 
 const imageUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
 ---
 
 // Local image with multiple sizes
-<Picture src={hero} widths={[200, 400, 800]} sizes="(max-width: 800px) 100vw, 800px" />
+<Picture src={hero} widths={[200, 400, 800]} sizes="(max-width: 800px) 100vw, 800px" alt="My hero image" />
 
 // Remote image (aspect ratio is required)
-<Picture src={imageUrl} widths={[200, 400, 800]} aspectRatio="4:3" sizes="(max-width: 800px) 100vw, 800px" />
+<Picture src={imageUrl} widths={[200, 400, 800]} aspectRatio="4:3" sizes="(max-width: 800px) 100vw, 800px" alt="My hero image" />
 
 // Inlined imports are supported
-<Picture src={import("../assets/hero.png")} widths={[200, 400, 800]} sizes="(max-width: 800px) 100vw, 800px" />
+<Picture src={import("../assets/hero.png")} widths={[200, 400, 800]} sizes="(max-width: 800px) 100vw, 800px" alt="My hero image" />
 ```
 
 </details>

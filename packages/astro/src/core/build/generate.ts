@@ -59,7 +59,7 @@ function shouldSkipDraft(pageModule: ComponentInstance, astroConfig: AstroConfig
 		!astroConfig.markdown.drafts &&
 		// This is a draft post
 		'frontmatter' in pageModule &&
-		(pageModule as any).frontmatter.draft === true
+		(pageModule as any).frontmatter?.draft === true
 	);
 }
 
@@ -210,10 +210,12 @@ async function generatePath(
 	const ssr = isBuildingToSSR(opts.astroConfig);
 	const url = new URL(opts.astroConfig.base + removeLeadingForwardSlash(pathname), origin);
 	const options: RenderOptions = {
+		adapterName: undefined,
 		links,
 		logging,
 		markdown: astroConfig.markdown,
 		mod,
+		mode: opts.mode,
 		origin,
 		pathname,
 		scripts,

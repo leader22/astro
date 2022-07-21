@@ -114,7 +114,7 @@ export default function markdown({ config }: AstroPluginOptions): Plugin {
 						export function $$loadMetadata() {
 							return load().then((m) => m.$$metadata);
 						}
-						
+
 						// Deferred
 						export default async function load() {
 							return (await import(${JSON.stringify(fileId + MARKDOWN_CONTENT_FLAG)}));
@@ -148,10 +148,12 @@ export default function markdown({ config }: AstroPluginOptions): Plugin {
 				// Turn HTML comments into JS comments while preventing nested `*/` sequences
 				// from ending the JS comment by injecting a zero-width space
 				// Inside code blocks, this is removed during renderMarkdown by the remark-escape plugin.
-				markdownContent = markdownContent.replace(
-					/<\s*!--([^-->]*)(.*?)-->/gs,
-					(whole) => `{/*${whole.replace(/\*\//g, '*\u200b/')}*/}`
-				);
+				if (renderOpts.mode === 'mdx') {
+					markdownContent = markdownContent.replace(
+						/<\s*!--([^-->]*)(.*?)-->/gs,
+						(whole) => `{/*${whole.replace(/\*\//g, '*\u200b/')}*/}`
+					);
+				}
 
 				let renderResult = await renderMarkdown(markdownContent, {
 					...renderOpts,
@@ -160,12 +162,19 @@ export default function markdown({ config }: AstroPluginOptions): Plugin {
 				let { code: astroResult, metadata } = renderResult;
 				const { layout = '', components = '', setup = '', ...content } = frontmatter;
 				content.astro = metadata;
+				content.url = getFileInfo(id, config).fileUrl;
+				content.file = filename;
 				const prelude = `---
-import { slug as $$slug } from '@astrojs/markdown-remark/ssr-utils';
+import Slugger from 'github-slugger';
 ${layout ? `import Layout from '${layout}';` : ''}
 ${components ? `import * from '${components}';` : ''}
 ${hasInjectedScript ? `import '${PAGE_SSR_SCRIPT_ID}';` : ''}
 ${setup}
+
+const slugger = new Slugger();
+function $$slug(value) {
+	return slugger.slug(value);
+}
 
 const $$content = ${JSON.stringify(content)}
 ---`;

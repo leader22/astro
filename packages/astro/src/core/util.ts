@@ -79,7 +79,10 @@ export function createSafeError(err: any): Error {
 /** generate code frame from esbuild error */
 export function codeFrame(src: string, loc: ErrorPayload['err']['loc']): string {
 	if (!loc) return '';
-	const lines = eol.lf(src).split('\n');
+	const lines = eol
+		.lf(src)
+		.split('\n')
+		.map((ln) => ln.replace(/\t/g, '  '));
 	// grab 2 lines before, and 3 lines after focused line
 	const visibleLines = [];
 	for (let n = -2; n <= 2; n++) {
@@ -98,16 +101,16 @@ export function codeFrame(src: string, loc: ErrorPayload['err']['loc']): string 
 		output += isFocusedLine ? '> ' : '  ';
 		output += `${lineNo + 1} | ${lines[lineNo]}\n`;
 		if (isFocusedLine)
-			output += `${[...new Array(gutterWidth)].join(' ')}  | ${[...new Array(loc.column)].join(
-				' '
-			)}^\n`;
+			output += `${Array.from({ length: gutterWidth }).join(' ')}  | ${Array.from({
+				length: loc.column,
+			}).join(' ')}^\n`;
 	}
 	return output;
 }
 
-export function resolveDependency(dep: string, astroConfig: AstroConfig) {
+export function resolveDependency(dep: string, projectRoot: URL) {
 	const resolved = resolve.sync(dep, {
-		basedir: fileURLToPath(astroConfig.root),
+		basedir: fileURLToPath(projectRoot),
 	});
 	// For Windows compat, we need a fully resolved `file://` URL string
 	return pathToFileURL(resolved).toString();
@@ -184,20 +187,7 @@ export function isBuildingToSSR(config: AstroConfig): boolean {
 	if (!adapter) return false;
 
 	if (typeof adapter.serverEntrypoint === 'string') {
-		if (!adapter.name.startsWith('@astrojs/') && !config.experimental.ssr) {
-			throw new Error(
-				[
-					`Server-side rendering (SSR) is still experimental.`,
-					``,
-					`Only official "@astrojs/*" adapters are currently supported.`,
-					`To enable SSR for 3rd-party adapters, use the "--experimental-ssr" flag.`,
-					`Breaking changes may occur in this API before Astro v1.0 is released.`,
-					``,
-				].join('\n')
-			);
-		} else {
-			return true;
-		}
+		return true;
 	} else {
 		return false;
 	}
